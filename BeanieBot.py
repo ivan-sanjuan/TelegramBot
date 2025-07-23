@@ -4,24 +4,12 @@ from stock_utils import symbol_handler
 from stock_utils import book_handler
 from book_scraper import search_book
 from stats_scraper import get_stats
-from flask import Flask
-from threading import Thread
 
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
-
-app = Flask('')
-
-@app.route('/')
-def home():
-    return "Beanie is swimming..."
-
-def run():
-    app.run(host='0.0.0.0', port=8080)
-
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
+print(f"Your bot token is: {API_KEY}")
+print('"Beanie is swimming..."')
+bot.remove_webhook()
 
 @bot.message_handler(commands=['stock'])
 def handle_stock(message):
@@ -42,22 +30,26 @@ def handle_stock(message):
     except IndexError:
         bot.reply_to(message, "Anong istock papa? 🐧🐧 ganto format '/stock BPI'")
         
-@bot.message_handler(commands=['books'])
-def handle_stock(message):
+@bot.message_handler(commands=['book'])
+def bot_book_search(message):
     try:
-        input = message
+        input = message.text.split(maxsplit=1)[1].strip()
         data = book_handler(input)
         book_results = search_book(data)
         print(f"Received command: {message.text}")
-        response = f'''Eto yung books mama, ispam ko?:\n
-        {book_results}
-        '''
-        bot.reply_to(message, *response)
+        for entry in book_results:
+            response = (
+                f"📚{entry['📚Title']}\n"
+                f"👤 Author: {entry['Author']}\n"
+                f"🈯 Language: {entry['Language']}\n"
+                f"📄 Format: {entry['Ext.']} — {entry['Filesize']}\n"
+                f"{entry['🔽Download Link🔽']}\n"
+            )
+            bot.send_message(message.chat.id, f'{response}\n+1 ISPAM 🐧🐧', disable_web_page_preview=True)
 
     except IndexError:
-        bot.reply_to(message, "Anong book mama buwwito? 🐧🐧 ganto format '/books little women'")
+        bot.reply_to(message, "Anong book mama? ganto format '/book little women' 🐧🐧")
 
 
-keep_alive()
-bot.polling(non_stop=True)
+bot.polling()
 

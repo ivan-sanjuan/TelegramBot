@@ -2,10 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import urllib.parse
 
-
-
-def search_book(book):
-    book_name = urllib.parse.quote(book.lower())
+def search_book(data):
+    book_name = urllib.parse.quote(data)
     url = f'https://z-library.sk/s/{book_name}'
     response = requests.get(url)
     html_data = response.text
@@ -14,7 +12,7 @@ def search_book(book):
     book_results = trimmed_soup.find_all('div', class_='book-item resItemBoxBooks')
     book_list = []
     index = 0
-    max_results = 20
+    max_results = 10
     results = book_results
     while index < max_results:
         books = results[index]
@@ -26,14 +24,18 @@ def search_book(book):
             extension = card.get('extension') or 'N/A'
             filesize = card.get('filesize') or 'N/A'
             download = card.get('download') or 'N/A'
+            dl_link = f'https://z-library.sk{download}'
             
-            search_results = (
-                f'📚{title.strip()}\n'
-                f'by {author.strip()}\n'
-                f'Language: {language.strip()}\n'
-                f'({extension} ({filesize}))\n'
-                f'🔽 https://z-library.sk{download.strip()} 🔽\n\n'
-            )
-            book_list.append(search_results)
+            book_dict = {
+            '📚Title': title,
+            'Author': author,
+            'Language': language,
+            'Ext.': extension,
+            'Filesize': filesize,
+            '🔽Download Link🔽': dl_link
+            }
+
+        book_list.append(book_dict)
         index += 1
+
     return book_list
