@@ -44,7 +44,3 @@ def get_stats(symbol):
     stats['Return on Equity'] = roe
     
     return stats
-
-test_var = 'mac'
-test = get_stats(test_var)
-print(test)

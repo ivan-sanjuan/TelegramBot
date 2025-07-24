@@ -25,16 +25,15 @@ def search_book(data):
                 title = card.find('div', {'slot': 'title'}).text.strip() or 'N/A'
                 author = card.find('div', {'slot': 'author'}).text.strip()  or 'N/A'
                 filesize = card.get('filesize') or 'N/A'
-                download = card.get('download') or 'N/A'
-                dl_link = f'https://z-library.sk{download}'
+                dl_link = card.get('href') or 'N/A'
                 
                 book_dict = {
-                '📚Title': title,
+                'Title': title,
                 'Author': author,
                 'Language': language,
                 'Ext.': extension,
                 'Filesize': filesize,
-                '🔽Download Link🔽': dl_link
+                'Download Link': dl_link
                 }
 
                 book_list.append(book_dict)

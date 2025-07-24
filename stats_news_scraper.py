@@ -12,11 +12,22 @@ def get_news(symbol):
     response = requests.get(url, headers=headers)
     html_response = response.text
     soup = BeautifulSoup(html_response, 'html.parser')
-    news = soup.find_all('div', class_='gap-4 border-gray-300 bg-default p-4 shadow last:pb-1 last:shadow-none dark:border-dark-600 sm:border-b sm:px-0 sm:shadow-none sm:last:border-b-0 lg:gap-5 sm:grid sm:grid-cols-news sm:py-6')[0].text
     
-    return news
-
-stock = 'bpi'
-test = get_news(stock)
-
-pprint.pprint(test)
+    news_block = {}
+    news_image = soup.find_all('img', class_='w-full rounded object-cover')
+    if news_image:
+        news_image_link = news_image[0].get('src', 'no image available')
+    news_title = soup.find_all('h3', class_='mb-2 mt-3 text-xl font-bold leading-snug sm:order-2 sm:mt-0 sm:leading-tight')[0].text
+    news_date = soup.find_all('div', class_='mt-1 text-sm text-faded sm:order-1 sm:mt-0')[0].text
+    news_summary = soup.find_all('p', class_='overflow-auto text-[0.95rem] text-light sm:order-3')[0].text
+    news_link = soup.find_all('a', class_='sm:mt-1')
+    if news_link:
+        news_link_formatted = news_link[0].get('href', 'no news link.')
+    
+    news_block['img'] = news_image_link
+    news_block['title'] = news_title
+    news_block['date'] = news_date
+    news_block['summary'] = news_summary
+    news_block['news_link'] = news_link_formatted
+    
+    return news_block
