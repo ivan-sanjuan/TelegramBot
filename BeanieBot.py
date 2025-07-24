@@ -4,6 +4,8 @@ from stock_utils import symbol_handler
 from stock_utils import book_handler
 from book_scraper import search_book
 from stats_scraper import get_stats
+from dotenv import load_dotenv
+load_dotenv()
 
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
@@ -14,21 +16,27 @@ bot.remove_webhook()
 @bot.message_handler(commands=['stock'])
 def handle_stock(message):
     try:
-        symbol = message.text.split()[1].upper()
+        symbol = message.text.split(maxsplit=1)[1].upper().strip()
         data = symbol_handler(symbol)
+        print(f"Symbol parsed: {symbol}")
         stats = get_stats(symbol)
         print(f"Received command: {message.text}")
         response = f'''Eto istats papa:\n
-        📈Stock: {data}\n
+        📈Stock: {data}
+        🏷️Price Today: ₱{stats.get('Price Today')} | {stats.get('Change')}
+        {stats.get('Date Change')}\n
         📊PE Ratio: {stats.get('PE Ratio')}
         💸PS Ratio: {stats.get('PS Ratio')}
         📏PEG: {stats.get('PEG Ratio')}
         🏦Return-on-Equity {stats.get('Return on Equity')}
-        '''
-        bot.reply_to(message, response)
+        
+        /news
+        '''            
 
     except IndexError:
         bot.reply_to(message, "Anong istock papa? 🐧🐧 ganto format '/stock BPI'")
+        
+    
         
 @bot.message_handler(commands=['book'])
 def bot_book_search(message):
@@ -51,5 +59,5 @@ def bot_book_search(message):
         bot.reply_to(message, "Anong book mama? ganto format '/book little women' 🐧🐧")
 
 
-bot.polling()
+bot.polling(none_stop=True)
 

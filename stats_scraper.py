@@ -6,6 +6,9 @@ def get_stats(symbol):
     response = requests.get(url)
     html = response.text
     soup = BeautifulSoup(html,'html.parser')
+    price_today = soup.find_all('div', class_='text-4xl font-bold transition-colors duration-300 inline-block')[0].text
+    change = soup.find_all('div', class_='mb-5 flex flex-row items-end space-x-2 xs:space-x-3 bp:space-x-5')[0].text.split(maxsplit=2)[1]
+    date_of_change = soup.find_all('div', class_='mb-5 flex flex-row items-end space-x-2 xs:space-x-3 bp:space-x-5')[0].text.split(maxsplit=2)[2]
     stats = {}
     valuation_column = soup.find_all('table', class_='w-full')[3]
     pe_ratio = None
@@ -13,6 +16,7 @@ def get_stats(symbol):
         if 'PE Ratio' in row.text:
             result_pe = row.text
             pe_ratio = result_pe.split()[2]
+            
     ps_ratio = None        
     for row in valuation_column.find_all('tr', class_='border-y border-gray-200 odd:bg-gray-50 dark:border-dark-700 dark:odd:bg-dark-775'):
         if 'PS Ratio' in row.text:
@@ -31,9 +35,16 @@ def get_stats(symbol):
             result_roe = row.text
             roe = result_roe.split()[4]
             
+    stats['Price Today'] = price_today
+    stats['Change'] = change
+    stats['Date Change'] = date_of_change
     stats['PE Ratio'] = pe_ratio
     stats['PS Ratio'] = ps_ratio
     stats['PEG Ratio'] = peg_ratio
     stats['Return on Equity'] = roe
     
     return stats
+
+test_var = 'mac'
+test = get_stats(test_var)
+print(test)
