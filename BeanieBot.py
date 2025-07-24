@@ -5,6 +5,7 @@ from stock_utils import book_handler
 from book_scraper import search_book
 from stats_scraper import get_stats
 from stats_news_scraper import get_news
+from div_yield import search_div
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -78,6 +79,16 @@ def handle_stock(message):
     except IndexError:
         bot.reply_to(message, "wawa siwang news papa wag ka makuwit haaa")
         
+@bot.message_handler(commands=['div'])
+def handle_stock(message):
+    try:
+        symbol = message.text.split(maxsplit=1)[1].upper().strip()
+        data = symbol_handler(symbol)
+        divs = search_div(data)
+        response = divs.to_string()
+        bot.send_message(message.chat.id, f'{response} +50 ispammm🐧🐧')
+    except IndexError:
+        bot.reply_to(message, 'wawa siwang dimbidend papa')
 
 bot.polling(none_stop=True)
 
