@@ -25,6 +25,6 @@ def search_div(symbol):
             table.cols = row.find_all(['th', 'td'])
             table.data = [col.get_text(strip=True) for col in table.cols]
             writer.writerow(table.data)
-
     div_df = pd.read_csv('dividend_history.csv', index_col=None, na_values=['N/A'])
+    
     return div_df
