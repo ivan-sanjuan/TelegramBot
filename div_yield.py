@@ -3,7 +3,6 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 import requests
-import pprint
 import csv
 
 def search_div(symbol):

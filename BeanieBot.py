@@ -6,8 +6,6 @@ from book_scraper import search_book
 from stats_scraper import get_stats
 from stats_news_scraper import get_news
 from div_yield import search_div
-from dotenv import load_dotenv
-load_dotenv()
 
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
